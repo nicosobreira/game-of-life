@@ -10,6 +10,8 @@
 
 // Yes, I know, the raylib already have a camera system but I want to make my own :)
 // TODO: Where do I put this struct?
+
+// TODO: Better name for `real` (this values holds the current screen width and height)
 typedef struct {
 	float_vector_t scale;
 	uint16_vector_t start;
@@ -17,12 +19,16 @@ typedef struct {
 	uint16_vector_t real;
 } camera_t;
 
+// FIX: The `end` and `start` values are actually hard coded (by using SCREEN_VIRTUAL_X)
+
+// FIX: And the `scale` is also hard coded (by using SCREEN_VIRTUAL_X)
+
 void updateCamera(camera_t *pCamera);
 
-void screenUpdate(uint16_vector_t *pScreen);
+void realUpdate(uint16_vector_t *pReal);
 
-void scaleUpdate(float_vector_t *pScale, uint16_vector_t *pScreen);
+void scaleUpdate(float_vector_t *pScale, uint16_vector_t *pReal);
 
-void realUpdate(uint16_vector_t *pReal, float_vector_t *pScale);
+void positionUpdate(uint16_vector_t *pPosition, float_vector_t *pScale);
 
 #endif // RENDER_SCALING_H

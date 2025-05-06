@@ -4,45 +4,48 @@
 
 void updateCamera(camera_t *pCamera)
 {
-	screenUpdate(& pCamera->end);
-	scaleUpdate(& pCamera->scale, & pCamera->end);
+	realUpdate(& pCamera->real);
+	scaleUpdate(& pCamera->scale, & pCamera->real);
 
-	realUpdate(& pCamera->real, & pCamera->scale);
+	positionUpdate(& pCamera->end, & pCamera->scale);
 }
 
-void screenUpdate(uint16_vector_t *pScreen)
+void realUpdate(uint16_vector_t *pReal)
 {
 	if (! IsWindowResized())
 	{
-		pScreen->x = (uint16_t)GetScreenWidth();
-		pScreen->y = (uint16_t)GetScreenHeight();
+		pReal->x = (uint16_t)GetScreenWidth();
+		pReal->y = (uint16_t)GetScreenHeight();
 		return;
 	}
 
-	pScreen->x = (uint16_t)GetScreenWidth();
-	pScreen->y = (uint16_t)GetScreenHeight();
+	pReal->x = (uint16_t)GetScreenWidth();
+	pReal->y = (uint16_t)GetScreenHeight();
 
 	// TODO: This logic should STOP the user from RESIZING the Window inside, just outside
-	if (pScreen->x < SCREEN_VIRTUAL_WIDTH)
+	if (pReal->x < SCREEN_VIRTUAL_WIDTH)
 	{
-		pScreen->x = SCREEN_VIRTUAL_WIDTH;
+		pReal->x = SCREEN_VIRTUAL_WIDTH;
 	}
 
-	if (pScreen->y < SCREEN_VIRTUAL_HEIGHT)
+	if (pReal->y < SCREEN_VIRTUAL_HEIGHT)
 	{
-		pScreen->y = SCREEN_VIRTUAL_HEIGHT;
+		pReal->y = SCREEN_VIRTUAL_HEIGHT;
 	}
 }
 
 // TODO: The scale should only updatee when `WindowResized`, but it should work on start up `gameDraw` from main.c
-void scaleUpdate(float_vector_t *pScale, uint16_vector_t *pScreen)
+void scaleUpdate(float_vector_t *pScale, uint16_vector_t *pReal)
 {
-	pScale->x = pScreen->x / (float)SCREEN_VIRTUAL_WIDTH;
-	pScale->y = pScreen->y / (float)SCREEN_VIRTUAL_HEIGHT;
+	pScale->x = (float)pReal->x / (float)SCREEN_VIRTUAL_WIDTH;
+	pScale->y = (float)pReal->y / (float)SCREEN_VIRTUAL_HEIGHT;
 }
 
-void realUpdate(uint16_vector_t *pReal, float_vector_t *pScale)
+void positionUpdate(uint16_vector_t *pPosition, float_vector_t *pScale)
 {
-	pReal->x = (uint16_t)((float)SCREEN_VIRTUAL_WIDTH * pScale->x);
-	pReal->y = (uint16_t)((float)SCREEN_VIRTUAL_HEIGHT * pScale->y);
+	if (! IsWindowResized())
+		return;
+
+	pPosition->x = (uint16_t)((float)SCREEN_VIRTUAL_WIDTH * pScale->x);
+	pPosition->y = (uint16_t)((float)SCREEN_VIRTUAL_HEIGHT * pScale->y);
 }

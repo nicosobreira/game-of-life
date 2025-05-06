@@ -14,12 +14,12 @@
 typedef struct Game
 {
 	camera_t camera;
-	uint16_t gridSize;
+	uint16_t cellSize;
 } game_state_t;
 
 uint8_t resizeFont(uint8_t fontSize, float scale);
 
-void drawGrid(uint16_t gridSize, const camera_t *pCamera);
+void drawGrid(uint16_t cellSize, const camera_t *pCamera);
 
 void gameInit(game_state_t *pGame);
 void gameInput(void);
@@ -57,7 +57,7 @@ void gameInit(game_state_t *pGame)
 	// Game
 	*pGame = (game_state_t)
 		{
-			.gridSize = 10,
+			.cellSize = 10,
 		};
 }
 
@@ -72,7 +72,7 @@ void gameDraw(game_state_t *pGame)
 	BeginDrawing();
 	ClearBackground(BLACK);
 
-	drawGrid(pGame->gridSize, & pGame->camera);
+	drawGrid(pGame->cellSize, & pGame->camera);
 
 	EndDrawing();
 }
@@ -82,24 +82,18 @@ void gameInput(void)
 }
 
 // TODO: The `drawGrid` should RESIZE the grid according to the `pCamera` values, but instead it is showing more or less grids
-void drawGrid(uint16_t gridSize, const camera_t *pCamera)
+void drawGrid(uint16_t cellSize, const camera_t *pCamera)
 {
-	Color defaultColor = (Color) { 200, 200, 200, 50 };
+	Color defaultColor = (Color){ 200, 200, 200, 50 };
 
 	// Horizontal lines
-	uint16_t pos = pCamera->start.x;
-	while (pos <= pCamera->real.y)
+	uint16_t height = (pCamera->end.y - pCamera->start.y);
+	uint16_t cellSizePerLine = (uint16_t)((float)(cellSize * pCamera->scale.y));
+	uint16_t currentLine = 0;
+	while (currentLine < height)
 	{
-		DrawLine(pCamera->start.x, pos, pCamera->real.x, pos, defaultColor);
-		pos += (uint16_t)((float)gridSize * pCamera->scale.x);
-	}
-
-	// Vertical lines
-	pos = pCamera->start.y;
-	while (pos <= pCamera->real.x)
-	{
-		DrawLine(pos, pCamera->start.y, pos, pCamera->real.y, defaultColor);
-		pos += (uint16_t)((float)gridSize * pCamera->scale.y);
+		DrawLine(pCamera->start.x, currentLine, pCamera->end.x, currentLine, defaultColor);
+		currentLine += cellSizePerLine;
 	}
 }
 
